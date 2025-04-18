@@ -18,7 +18,18 @@ export const logoutUser = async (req, res) => {
         return res.status(403).json({ success: false, message: err.message });
       }
 
-      // Store the token in a blacklist table
+      // Step 1: Create the token_blacklist table if it doesn't exist
+      await db.execute(`
+        CREATE TABLE IF NOT EXISTS token_blacklist (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          token TEXT NOT NULL,
+          user_id INT NOT NULL,
+          expires_at TIMESTAMP NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+
+      // Step 2: Store the token in the blacklist table
       await db.query('INSERT INTO token_blacklist (token, user_id, expires_at) VALUES (?, ?, ?)', [
         token,
         decoded.id,

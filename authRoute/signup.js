@@ -17,6 +17,7 @@ export const registerUser = async (req, res) => {
   ) {
     return res.status(400).json({ message: "Please fill complete form." });
   }
+  
 
   //checking password matching or not
   if (password !== confirmPassword) {
